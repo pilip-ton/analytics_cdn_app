@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Telegram Mini App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Подключаем eruda -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+
+  <!-- Подключаем TGAnalytics -->
+  <script 
+    async 
+    src="https://tganalytics.xyz/index.js" 
+    onload="initAnalytics()" 
+    type="text/javascript"
+  ></script>
+
+  <script>
+    // Функция инициализации TGAnalytics
+    function initAnalytics() {
+      console.log('Initializing TGAnalytics...');
+      if (window.telegramAnalytics) {
+        window.telegramAnalytics.init({
+          token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL21pbmktYXBwLWIyNy5wYWdlcy5kZXYvIn0=!PtMj5SqGQ6UYEgiggPKqmbHwj/bO4pvYWvnpQ/xvl0g=', // <-- замени на свой токен!
+          appName: 'cdn_mega_test' // <-- замени на свой идентификатор!
+        });
+        console.log('TGAnalytics initialized.');
+      } else {
+        console.warn('TGAnalytics script not loaded.');
+      }
+    }
+  </script>
+
+</head>
+<body>
+  <h1>Hello, Telegram Mini App!</h1>
+
+  <script>
+    // Инициализация Eruda
+    eruda.init();
+
+    // Обработка готовности Telegram WebApp
+    if (window.Telegram?.WebApp) {
+      Telegram.WebApp.ready();
+      console.log('Telegram WebApp is ready');
+    }
+  </script>
+</body>
+</html>

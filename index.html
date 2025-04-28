@@ -2,49 +2,56 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Telegram Mini App</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini App</title>
 
-  <!-- Подключаем eruda -->
-  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-
-  <!-- Подключаем TGAnalytics -->
-  <script 
-    async 
-    src="https://tganalytics.xyz/index.js" 
-    onload="initAnalytics()" 
+  <!-- Telegram Analytics -->
+  <script
+    async
+    src="https://tganalytics.xyz/index.js"
+    onload="initAnalytics()"
     type="text/javascript"
   ></script>
 
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    #status {
+      padding: 10px;
+      background: #e0e0e0;
+      border-radius: 8px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+
   <script>
-    // Функция инициализации TGAnalytics
     function initAnalytics() {
-      console.log('Initializing TGAnalytics...');
       if (window.telegramAnalytics) {
         window.telegramAnalytics.init({
-          token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL21pbmktYXBwLWIyNy5wYWdlcy5kZXYvIn0=!PtMj5SqGQ6UYEgiggPKqmbHwj/bO4pvYWvnpQ/xvl0g=', // <-- замени на свой токен!
-          appName: 'cdn_mega_test' // <-- замени на свой идентификатор!
+          token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL21pbmktYXBwLWIyNy5wYWdlcy5kZXYvIn0=!PtMj5SqGQ6UYEgiggPKqmbHwj/bO4pvYWvnpQ/xvl0g=',
+          appName: 'cdn_mega_test',
         });
-        console.log('TGAnalytics initialized.');
+        document.getElementById('status').textContent = '✅ Аналитика успешно загружена';
       } else {
-        console.warn('TGAnalytics script not loaded.');
+        document.getElementById('status').textContent = '❌ Ошибка загрузки аналитики';
       }
     }
-  </script>
 
+    // На случай, если скрипт вообще не загрузился
+    window.addEventListener('error', function(event) {
+      if (event.target.tagName === 'SCRIPT' && event.target.src.includes('tganalytics')) {
+        document.getElementById('status').textContent = '❌ Ошибка загрузки скрипта аналитики';
+      }
+    }, true);
+  </script>
 </head>
+
 <body>
-  <h1>Hello, Telegram Mini App!</h1>
+  <h1>Мой Телеграм Мини-Апп</h1>
 
-  <script>
-    // Инициализация Eruda
-    eruda.init();
-
-    // Обработка готовности Telegram WebApp
-    if (window.Telegram?.WebApp) {
-      Telegram.WebApp.ready();
-      console.log('Telegram WebApp is ready');
-    }
-  </script>
+  <div id="status">⌛ Ожидание загрузки аналитики...</div>
 </body>
 </html>

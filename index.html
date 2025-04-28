@@ -34,24 +34,24 @@
           token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL21pbmktYXBwLWIyNy5wYWdlcy5kZXYvIn0=!PtMj5SqGQ6UYEgiggPKqmbHwj/bO4pvYWvnpQ/xvl0g=',
           appName: 'cdn_mega_test',
         });
-        document.getElementById('status').textContent = '✅ Аналитика успешно загружена';
+        document.getElementById('status').textContent = '✅ Analytics is loaded';
       } else {
-        document.getElementById('status').textContent = '❌ Ошибка загрузки аналитики';
+        document.getElementById('status').textContent = '❌ Analytics failed to load';
       }
     }
 
     // На случай, если скрипт вообще не загрузился
     window.addEventListener('error', function(event) {
       if (event.target.tagName === 'SCRIPT' && event.target.src.includes('tganalytics')) {
-        document.getElementById('status').textContent = '❌ Ошибка загрузки скрипта аналитики';
+        document.getElementById('status').textContent = '❌ Failed to load script';
       }
     }, true);
   </script>
 </head>
 
 <body>
-  <h1>Мой Телеграм Мини-Апп</h1>
+  <h1>Analytics CDN checker</h1>
 
-  <div id="status">⌛ Ожидание загрузки аналитики...</div>
+  <div id="status">⌛ Waiting for analytics...</div>
 </body>
 </html>

@@ -64,13 +64,13 @@
     // Обработчики для первого CDN
     function onFirstCdnLoaded() {
       firstCdnLoaded = true;
-      document.getElementById('first-cdn-status').textContent = '✅ Первый CDN (tganalytics.xyz) загружен';
+      document.getElementById('first-cdn-status').textContent = '✅ OLD CDN is loaded';
       document.getElementById('first-cdn-status').className = 'cdn-status success';
       checkAllLoaded();
     }
     
     function onFirstCdnError() {
-      document.getElementById('first-cdn-status').textContent = '❌ Ошибка загрузки первого CDN (tganalytics.xyz)';
+      document.getElementById('first-cdn-status').textContent = '❌ Old CDN is failed to load';
       document.getElementById('first-cdn-status').className = 'cdn-status error';
       checkAllLoaded();
     }
@@ -78,13 +78,13 @@
     // Обработчики для второго CDN
     function onSecondCdnLoaded() {
       secondCdnLoaded = true;
-      document.getElementById('second-cdn-status').textContent = '✅ Второй CDN (cdn.tganalytics.xyz) загружен';
+      document.getElementById('second-cdn-status').textContent = '✅ New CDN is loaded';
       document.getElementById('second-cdn-status').className = 'cdn-status success';
       checkAllLoaded();
     }
     
     function onSecondCdnError() {
-      document.getElementById('second-cdn-status').textContent = '❌ Ошибка загрузки второго CDN (cdn.tganalytics.xyz)';
+      document.getElementById('second-cdn-status').textContent = '❌ New CDN is failed to load)';
       document.getElementById('second-cdn-status').className = 'cdn-status error';
       checkAllLoaded();
     }
@@ -109,10 +109,10 @@
           token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL21pbmktYXBwLWIyNy5wYWdlcy5kZXYvIn0=!PtMj5SqGQ6UYEgiggPKqmbHwj/bO4pvYWvnpQ/xvl0g=',
           appName: 'cdn_mega_test',
         });
-        document.getElementById('status').textContent = '✅ Аналитика успешно инициализирована';
+        document.getElementById('status').textContent = '✅ Succesful init';
         document.getElementById('status').className = 'success';
       } else {
-        document.getElementById('status').textContent = '❌ Не удалось инициализировать аналитику';
+        document.getElementById('status').textContent = '❌ Error on init ';
         document.getElementById('status').className = 'error';
       }
     }
@@ -131,8 +131,8 @@
 </head>
 <body>
   <h1>Analytics CDN Checker</h1>
-  <div id="first-cdn-status" class="cdn-status">⌛ Ожидание загрузки первого CDN (tganalytics.xyz)...</div>
-  <div id="second-cdn-status" class="cdn-status">⌛ Ожидание загрузки второго CDN (cdn.tganalytics.xyz)...</div>
-  <div id="status">⌛ Ожидание загрузки аналитики...</div>
+  <div id="first-cdn-status" class="cdn-status">⌛ Waiting for old CDN ...</div>
+  <div id="second-cdn-status" class="cdn-status">⌛ Waiting for new CDN ...</div>
+  <div id="status">⌛ Waiting for init...</div>
 </body>
 </html>

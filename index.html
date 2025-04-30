@@ -3,19 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <title>Analytics CDN Checker</title>
-
   <!-- Eruda Console -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
-
-  <!-- Telegram Analytics -->
+  
+  <!-- Первый CDN: Telegram Analytics -->
   <script 
     async
     src="https://tganalytics.xyz/index.js"
-    onload="initAnalytics()"
+    onload="onFirstCdnLoaded()"
+    onerror="onFirstCdnError()"
+    id="first-cdn"
     type="text/javascript"
   ></script>
-
+  
+  <!-- Второй CDN: Telegram Analytics -->
+  <script 
+    async
+    src="https://cdn.tganalytics.xyz/index.js"
+    onload="onSecondCdnLoaded()"
+    onerror="onSecondCdnError()"
+    id="second-cdn"
+    type="text/javascript"
+  ></script>
+  
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -29,32 +40,99 @@
       margin-top: 20px;
       font-weight: bold;
     }
+    .cdn-status {
+      padding: 10px;
+      background: #e0e0e0;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+    }
   </style>
-
+  
   <script>
+    // Флаги загрузки для каждого CDN
+    let firstCdnLoaded = false;
+    let secondCdnLoaded = false;
+    
+    // Обработчики для первого CDN
+    function onFirstCdnLoaded() {
+      firstCdnLoaded = true;
+      document.getElementById('first-cdn-status').textContent = '✅ Первый CDN (tganalytics.xyz) загружен';
+      document.getElementById('first-cdn-status').className = 'cdn-status success';
+      checkAllLoaded();
+    }
+    
+    function onFirstCdnError() {
+      document.getElementById('first-cdn-status').textContent = '❌ Ошибка загрузки первого CDN (tganalytics.xyz)';
+      document.getElementById('first-cdn-status').className = 'cdn-status error';
+      checkAllLoaded();
+    }
+    
+    // Обработчики для второго CDN
+    function onSecondCdnLoaded() {
+      secondCdnLoaded = true;
+      document.getElementById('second-cdn-status').textContent = '✅ Второй CDN (cdn.tganalytics.xyz) загружен';
+      document.getElementById('second-cdn-status').className = 'cdn-status success';
+      checkAllLoaded();
+    }
+    
+    function onSecondCdnError() {
+      document.getElementById('second-cdn-status').textContent = '❌ Ошибка загрузки второго CDN (cdn.tganalytics.xyz)';
+      document.getElementById('second-cdn-status').className = 'cdn-status error';
+      checkAllLoaded();
+    }
+    
+    // Проверка загрузки обоих CDN и инициализация
+    function checkAllLoaded() {
+      const mainStatus = document.getElementById('status');
+      
+      if (firstCdnLoaded || secondCdnLoaded) {
+        // Если хотя бы один CDN загружен, инициализируем аналитику
+        initAnalytics();
+      } else if (!firstCdnLoaded && !secondCdnLoaded) {
+        // Если оба CDN не загрузились
+        mainStatus.textContent = '❌ Не удалось загрузить ни один из CDN';
+        mainStatus.className = 'error';
+      }
+    }
+    
     function initAnalytics() {
       if (window.telegramAnalytics) {
         window.telegramAnalytics.init({
           token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL21pbmktYXBwLWIyNy5wYWdlcy5kZXYvIn0=!PtMj5SqGQ6UYEgiggPKqmbHwj/bO4pvYWvnpQ/xvl0g=',
           appName: 'cdn_mega_test',
         });
-        document.getElementById('status').textContent = '✅ Analytics is loaded';
+        document.getElementById('status').textContent = '✅ Аналитика успешно инициализирована';
+        document.getElementById('status').className = 'success';
       } else {
-        document.getElementById('status').textContent = '❌ Analytics failed to load';
+        document.getElementById('status').textContent = '❌ Не удалось инициализировать аналитику';
+        document.getElementById('status').className = 'error';
       }
     }
-
+    
+    // Обработчик ошибок загрузки скриптов
     window.addEventListener('error', function(event) {
-      if (event.target.tagName === 'SCRIPT' && event.target.src.includes('tganalytics')) {
-        document.getElementById('status').textContent = '❌ Failed to load script';
+      if (event.target.tagName === 'SCRIPT') {
+        if (event.target.src.includes('tganalytics.xyz/index.js')) {
+          onFirstCdnError();
+        } else if (event.target.src.includes('cdn.tganalytics.xyz/index.js')) {
+          onSecondCdnError();
+        }
       }
     }, true);
   </script>
 </head>
-
 <body>
   <h1>Analytics CDN Checker</h1>
-
-  <div id="status">⌛ Waiting for analytics...</div>
+  <div id="first-cdn-status" class="cdn-status">⌛ Ожидание загрузки первого CDN (tganalytics.xyz)...</div>
+  <div id="second-cdn-status" class="cdn-status">⌛ Ожидание загрузки второго CDN (cdn.tganalytics.xyz)...</div>
+  <div id="status">⌛ Ожидание загрузки аналитики...</div>
 </body>
 </html>

@@ -7,26 +7,6 @@
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
   
-  <!-- Первый CDN: Telegram Analytics -->
-  <script 
-    async
-    src="https://tganalytics.xyz/index.js"
-    onload="onFirstCdnLoaded()"
-    onerror="onFirstCdnError()"
-    id="first-cdn"
-    type="text/javascript"
-  ></script>
-  
-  <!-- Второй CDN: Telegram Analytics -->
-  <script 
-    async
-    src="https://cdn.tganalytics.xyz/index.js"
-    onload="onSecondCdnLoaded()"
-    onerror="onSecondCdnError()"
-    id="second-cdn"
-    type="text/javascript"
-  ></script>
-  
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -55,50 +35,56 @@
       color: #721c24;
     }
   </style>
+</head>
+<body>
+  <h1>Analytics CDN Checker</h1>
+  <div id="first-cdn-status" class="cdn-status">⌛ Waiting for primary CDN...</div>
+  <div id="second-cdn-status" class="cdn-status">⌛ Waiting for secondary CDN...</div>
+  <div id="status">⌛ Waiting for analytics initialization...</div>
   
   <script>
-    // Флаги загрузки для каждого CDN
+    // CDN loading flags
     let firstCdnLoaded = false;
     let secondCdnLoaded = false;
     
-    // Обработчики для первого CDN
+    // Primary CDN handlers
     function onFirstCdnLoaded() {
       firstCdnLoaded = true;
-      document.getElementById('first-cdn-status').textContent = '✅ OLD CDN is loaded';
+      document.getElementById('first-cdn-status').textContent = '✅ Primary CDN loaded successfully';
       document.getElementById('first-cdn-status').className = 'cdn-status success';
       checkAllLoaded();
     }
     
     function onFirstCdnError() {
-      document.getElementById('first-cdn-status').textContent = '❌ Old CDN is failed to load';
+      document.getElementById('first-cdn-status').textContent = '❌ Primary CDN failed to load';
       document.getElementById('first-cdn-status').className = 'cdn-status error';
       checkAllLoaded();
     }
     
-    // Обработчики для второго CDN
+    // Secondary CDN handlers
     function onSecondCdnLoaded() {
       secondCdnLoaded = true;
-      document.getElementById('second-cdn-status').textContent = '✅ New CDN is loaded';
+      document.getElementById('second-cdn-status').textContent = '✅ Secondary CDN loaded successfully';
       document.getElementById('second-cdn-status').className = 'cdn-status success';
       checkAllLoaded();
     }
     
     function onSecondCdnError() {
-      document.getElementById('second-cdn-status').textContent = '❌ New CDN is failed to load)';
+      document.getElementById('second-cdn-status').textContent = '❌ Secondary CDN failed to load';
       document.getElementById('second-cdn-status').className = 'cdn-status error';
       checkAllLoaded();
     }
     
-    // Проверка загрузки обоих CDN и инициализация
+    // Check if any CDN loaded and initialize
     function checkAllLoaded() {
       const mainStatus = document.getElementById('status');
       
       if (firstCdnLoaded || secondCdnLoaded) {
-        // Если хотя бы один CDN загружен, инициализируем аналитику
+        // If at least one CDN loaded, initialize analytics
         initAnalytics();
       } else if (!firstCdnLoaded && !secondCdnLoaded) {
-        // Если оба CDN не загрузились
-        mainStatus.textContent = '❌ Не удалось загрузить ни один из CDN';
+        // If both CDNs failed
+        mainStatus.textContent = '❌ All CDNs failed to load';
         mainStatus.className = 'error';
       }
     }
@@ -109,30 +95,44 @@
           token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL21pbmktYXBwLWIyNy5wYWdlcy5kZXYvIn0=!PtMj5SqGQ6UYEgiggPKqmbHwj/bO4pvYWvnpQ/xvl0g=',
           appName: 'cdn_mega_test',
         });
-        document.getElementById('status').textContent = '✅ Succesful init';
+        document.getElementById('status').textContent = '✅ Analytics initialized successfully';
         document.getElementById('status').className = 'success';
       } else {
-        document.getElementById('status').textContent = '❌ Error on init ';
+        document.getElementById('status').textContent = '❌ Analytics initialization failed';
         document.getElementById('status').className = 'error';
       }
     }
     
-    // Обработчик ошибок загрузки скриптов
+    // Script error handler
     window.addEventListener('error', function(event) {
       if (event.target.tagName === 'SCRIPT') {
-        if (event.target.src.includes('tganalytics.xyz/index.js')) {
+        const src = event.target.src;
+        // Compare using URL properties without displaying actual URLs
+        if (src === firstScript.src) {
           onFirstCdnError();
-        } else if (event.target.src.includes('cdn.tganalytics.xyz/index.js')) {
+        } else if (src === secondScript.src) {
           onSecondCdnError();
         }
       }
     }, true);
+    
+    // Load primary CDN
+    const firstScript = document.createElement('script');
+    firstScript.async = true;
+    firstScript.src = 'https://tganalytics.xyz/index.js';
+    firstScript.onload = onFirstCdnLoaded;
+    firstScript.onerror = onFirstCdnError;
+    firstScript.id = 'first-cdn';
+    document.body.appendChild(firstScript);
+    
+    // Load secondary CDN
+    const secondScript = document.createElement('script');
+    secondScript.async = true;
+    secondScript.src = 'https://cdn.tganalytics.xyz/index.js';
+    secondScript.onload = onSecondCdnLoaded;
+    secondScript.onerror = onSecondCdnError;
+    secondScript.id = 'second-cdn';
+    document.body.appendChild(secondScript);
   </script>
-</head>
-<body>
-  <h1>Analytics CDN Checker</h1>
-  <div id="first-cdn-status" class="cdn-status">⌛ Waiting for old CDN ...</div>
-  <div id="second-cdn-status" class="cdn-status">⌛ Waiting for new CDN ...</div>
-  <div id="status">⌛ Waiting for init...</div>
 </body>
 </html>

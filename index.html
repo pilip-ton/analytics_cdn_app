@@ -43,96 +43,87 @@
   <div id="status">⌛ Waiting for analytics initialization...</div>
   
   <script>
-    // CDN loading flags
-    let firstCdnLoaded = false;
-    let secondCdnLoaded = false;
-    
-    // Primary CDN handlers
-    function onFirstCdnLoaded() {
-      firstCdnLoaded = true;
-      document.getElementById('first-cdn-status').textContent = '✅ Primary CDN loaded successfully';
-      document.getElementById('first-cdn-status').className = 'cdn-status success';
-      checkAllLoaded();
+  const MAX_RETRIES = 3;
+  const RETRY_DELAY_MS = 1000;
+
+  let firstCdnLoaded = false;
+  let secondCdnLoaded = false;
+
+  function updateStatus(id, message, className) {
+    const el = document.getElementById(id);
+    el.textContent = message;
+    el.className = `cdn-status ${className}`;
+  }
+
+  function checkAllLoaded() {
+    const mainStatus = document.getElementById('status');
+    if (firstCdnLoaded || secondCdnLoaded) {
+      initAnalytics();
+    } else if (!firstCdnLoaded && !secondCdnLoaded) {
+      mainStatus.textContent = '❌ All CDNs failed to load';
+      mainStatus.className = 'error';
     }
-    
-    function onFirstCdnError() {
-      document.getElementById('first-cdn-status').textContent = '❌ Primary CDN failed to load';
-      document.getElementById('first-cdn-status').className = 'cdn-status error';
-      checkAllLoaded();
+  }
+
+  function initAnalytics() {
+    if (window.telegramAnalytics) {
+      window.telegramAnalytics.init({
+        token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL21pbmktYXBwLWIyNy5wYWdlcy5kZXYvIn0=!PtMj5SqGQ6UYEgiggPKqmbHwj/bO4pvYWvnpQ/xvl0g=',
+        appName: 'cdn_mega_test',
+      });
+      updateStatus('status', '✅ Analytics initialized successfully', 'success');
+    } else {
+      updateStatus('status', '❌ Analytics initialization failed', 'error');
     }
-    
-    // Secondary CDN handlers
-    function onSecondCdnLoaded() {
-      secondCdnLoaded = true;
-      document.getElementById('second-cdn-status').textContent = '✅ Secondary CDN loaded successfully';
-      document.getElementById('second-cdn-status').className = 'cdn-status success';
-      checkAllLoaded();
-    }
-    
-    function onSecondCdnError() {
-      document.getElementById('second-cdn-status').textContent = '❌ Secondary CDN failed to load';
-      document.getElementById('second-cdn-status').className = 'cdn-status error';
-      checkAllLoaded();
-    }
-    
-    // Check if any CDN loaded and initialize
-    function checkAllLoaded() {
-      const mainStatus = document.getElementById('status');
-      
-      if (firstCdnLoaded || secondCdnLoaded) {
-        // If at least one CDN loaded, initialize analytics
-        initAnalytics();
-      } else if (!firstCdnLoaded && !secondCdnLoaded) {
-        // If both CDNs failed
-        mainStatus.textContent = '❌ All CDNs failed to load';
-        mainStatus.className = 'error';
-      }
-    }
-    
-    function initAnalytics() {
-      if (window.telegramAnalytics) {
-        window.telegramAnalytics.init({
-          token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL21pbmktYXBwLWIyNy5wYWdlcy5kZXYvIn0=!PtMj5SqGQ6UYEgiggPKqmbHwj/bO4pvYWvnpQ/xvl0g=',
-          appName: 'cdn_mega_test',
-        });
-        document.getElementById('status').textContent = '✅ Analytics initialized successfully';
-        document.getElementById('status').className = 'success';
-      } else {
-        document.getElementById('status').textContent = '❌ Analytics initialization failed';
-        document.getElementById('status').className = 'error';
-      }
-    }
-    
-    // Script error handler
-    window.addEventListener('error', function(event) {
-      if (event.target.tagName === 'SCRIPT') {
-        const src = event.target.src;
-        // Compare using URL properties without displaying actual URLs
-        if (src === firstScript.src) {
-          onFirstCdnError();
-        } else if (src === secondScript.src) {
-          onSecondCdnError();
+  }
+
+  function loadScriptWithRetry({ src, id, successCallback, errorCallback, statusId }) {
+    let attempts = 0;
+
+    function tryLoad() {
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = src + `?retry=${attempts}`; // prevent caching
+      script.id = id;
+
+      script.onload = () => {
+        successCallback();
+        updateStatus(statusId, `✅ Loaded in ${attempts + 1} attempt(s)`, 'success');
+      };
+
+      script.onerror = (e) => {
+        attempts++;
+        if (attempts < MAX_RETRIES) {
+          updateStatus(statusId, `⚠️ Retry ${attempts}/${MAX_RETRIES} for ${id}`, 'error');
+          setTimeout(tryLoad, RETRY_DELAY_MS);
+        } else {
+          const errorMsg = e?.message || 'Unknown error';
+          errorCallback();
+          updateStatus(statusId, `❌ Failed after ${attempts} attempts. Error: ${errorMsg}`, 'error');
         }
-      }
-    }, true);
-    
-    // Load primary CDN
-    const firstScript = document.createElement('script');
-    firstScript.async = true;
-    firstScript.src = 'https://tganalytics.xyz/index.js';
-    firstScript.onload = onFirstCdnLoaded;
-    firstScript.onerror = onFirstCdnError;
-    firstScript.id = 'first-cdn';
-    document.body.appendChild(firstScript);
-    
-    // Load secondary CDN
-    const secondScript = document.createElement('script');
-    secondScript.async = true;
-    secondScript.src = 'https://cdn.tganalytics.xyz/index.js';
-    secondScript.onload = onSecondCdnLoaded;
-    secondScript.onerror = onSecondCdnError;
-    secondScript.id = 'second-cdn';
-    document.body.appendChild(secondScript);
-  </script>
+      };
+
+      document.body.appendChild(script);
+    }
+
+    tryLoad();
+  }
+
+  loadScriptWithRetry({
+    src: 'https://tganalytics.xyz/index.js',
+    id: 'first-cdn',
+    successCallback: () => { firstCdnLoaded = true; checkAllLoaded(); },
+    errorCallback: () => { firstCdnLoaded = false; checkAllLoaded(); },
+    statusId: 'first-cdn-status'
+  });
+
+  loadScriptWithRetry({
+    src: 'https://cdn.tganalytics.xyz/index.js',
+    id: 'second-cdn',
+    successCallback: () => { secondCdnLoaded = true; checkAllLoaded(); },
+    errorCallback: () => { secondCdnLoaded = false; checkAllLoaded(); },
+    statusId: 'second-cdn-status'
+  });
+</script>
 </body>
 </html>

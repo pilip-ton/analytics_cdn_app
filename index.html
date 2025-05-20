@@ -41,7 +41,49 @@
   <div id="first-cdn-status" class="cdn-status">⌛ Waiting for primary CDN...</div>
   <div id="second-cdn-status" class="cdn-status">⌛ Waiting for secondary CDN...</div>
   <div id="status">⌛ Waiting for analytics initialization...</div>
-  
+
+  <script>
+    // Intercept fetch and XMLHttpRequest for /events monitoring
+    (function interceptAnalyticsRequests() {
+      const originalFetch = window.fetch;
+      window.fetch = async function (...args) {
+        const url = args[0];
+        if (typeof url === 'string' && url.includes('/events')) {
+          const response = await originalFetch.apply(this, args);
+          if (response.status === 201) {
+            updateStatus('status', '✅ Analytics event sent (201)', 'success');
+          } else {
+            updateStatus('status', `❌ Analytics event failed (status ${response.status})`, 'error');
+          }
+          return response;
+        }
+        return originalFetch.apply(this, args);
+      };
+
+      const originalXhrOpen = XMLHttpRequest.prototype.open;
+      const originalXhrSend = XMLHttpRequest.prototype.send;
+
+      XMLHttpRequest.prototype.open = function (method, url) {
+        this._isAnalyticsEvent = url.includes('/events');
+        return originalXhrOpen.apply(this, arguments);
+      };
+
+      XMLHttpRequest.prototype.send = function () {
+        if (this._isAnalyticsEvent) {
+          this.addEventListener('load', function () {
+            if (this.status === 201) {
+              updateStatus('status', '✅ Analytics event sent (201)', 'success');
+            } else {
+              updateStatus('status', `❌ Analytics event failed (status ${this.status})`, 'error');
+            }
+          });
+        }
+        return originalXhrSend.apply(this, arguments);
+      };
+    })();
+  </script>
+
+
   <script>
   const MAX_RETRIES = 3;
   const RETRY_DELAY_MS = 1000;

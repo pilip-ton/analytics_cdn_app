@@ -65,17 +65,22 @@
     }
   }
 
+  let analyticsInitialized = false;
+
   function initAnalytics() {
+    if (analyticsInitialized) return; // Предотвращаем повтор
     if (window.telegramAnalytics) {
       window.telegramAnalytics.init({
         token: 'eyJhcHBfbmFtZSI6ImNkbl9tZWdhX3Rlc3QiLCJhcHBfdXJsIjoiaHR0cHM6Ly90Lm1lL2Nkbm1lZ2F0ZXN0X2JvdCIsImFwcF9kb21haW4iOiJodHRwczovL3BpbGlwLXRvbi5naXRodWIuaW8ifQ==!JR3fQDuXX2x4cmVyViUFxH7B8scZ14zAq+kw6M98NE4=',
         appName: 'cdn_mega_test',
       });
+      analyticsInitialized = true;
       updateStatus('status', '✅ Analytics initialized successfully', 'success');
     } else {
       updateStatus('status', '❌ Analytics initialization failed', 'error');
     }
   }
+
 
   function loadScriptWithRetry({ src, id, successCallback, errorCallback, statusId }) {
   let attempts = 0;

@@ -71,7 +71,7 @@
       XMLHttpRequest.prototype.send = function () {
         if (this._isAnalyticsEvent) {
           this.addEventListener('load', function () {
-            if (this.status === 201) {
+            if (this.status === 201 || this.status === 200) {
               updateStatus('status', '✅ Analytics event sent (201)', 'success');
             } else {
               updateStatus('status', `❌ Analytics event failed (status ${this.status})`, 'error');

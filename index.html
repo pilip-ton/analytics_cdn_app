@@ -78,36 +78,47 @@
   }
 
   function loadScriptWithRetry({ src, id, successCallback, errorCallback, statusId }) {
-    let attempts = 0;
+  let attempts = 0;
+  const startTime = performance.now(); // Засекаем время начала
 
-    function tryLoad() {
-      const script = document.createElement('script');
-      script.async = true;
-      script.src = src + `?retry=${attempts}`; // prevent caching
-      script.id = id;
+  function tryLoad() {
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = src + `?retry=${attempts}`; // предотвращаем кеширование
+    script.id = id;
 
-      script.onload = () => {
-        successCallback();
-        updateStatus(statusId, `✅ Loaded in ${attempts + 1} attempt(s)`, 'success');
-      };
+    script.onload = () => {
+      const duration = (performance.now() - startTime).toFixed(2); // Время загрузки
+      successCallback();
+      updateStatus(
+        statusId,
+        `✅ Loaded in ${attempts + 1} attempt(s) — ${duration} ms`,
+        'success'
+      );
+    };
 
-      script.onerror = (e) => {
-        attempts++;
-        if (attempts < MAX_RETRIES) {
-          updateStatus(statusId, `⚠️ Retry ${attempts}/${MAX_RETRIES} for ${id}`, 'error');
-          setTimeout(tryLoad, RETRY_DELAY_MS);
-        } else {
-          const errorMsg = e?.message || 'Unknown error';
-          errorCallback();
-          updateStatus(statusId, `❌ Failed after ${attempts} attempts. Error: ${errorMsg}`, 'error');
-        }
-      };
+    script.onerror = (e) => {
+      attempts++;
+      if (attempts < MAX_RETRIES) {
+        updateStatus(statusId, `⚠️ Retry ${attempts}/${MAX_RETRIES} for ${id}`, 'error');
+        setTimeout(tryLoad, RETRY_DELAY_MS);
+      } else {
+        const duration = (performance.now() - startTime).toFixed(2);
+        const errorMsg = e?.message || 'Unknown error';
+        errorCallback();
+        updateStatus(
+          statusId,
+          `❌ Failed after ${attempts} attempts. (${duration} ms) Error: ${errorMsg}`,
+          'error'
+        );
+      }
+    };
 
-      document.body.appendChild(script);
-    }
-
-    tryLoad();
+    document.body.appendChild(script);
   }
+
+  tryLoad();
+}
 
   loadScriptWithRetry({
     src: 'https://tganalytics.xyz/index.js',

@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Analytics CDN Checker</title>
+
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
   <!-- Eruda Console -->
   <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
   <script>eruda.init();</script>
@@ -41,6 +45,14 @@
 </div>
 
 <script>
+  // Telegram WebApp SDK init
+  window.Telegram.WebApp.ready();
+  const tg = window.Telegram.WebApp;
+  tg.expand(); // Optional: expand the app to full height
+
+  console.log('Telegram WebApp platform:', tg.platform);
+  console.log('Telegram initData:', tg.initData);
+
   // Обновление статуса
   function updateStatus(id, message, className) {
     const el = document.getElementById(id);

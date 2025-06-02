@@ -135,16 +135,19 @@
     function tryLoad() {
       const script = document.createElement('script');
       script.async = true;
-      script.src = `${src}?retry=${attempts}`;
+
+      // 🔥 Добавляем уникальный параметр для отключения кэша
+      const uniqueParam = `nocache=${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
+      script.src = `${src}?${uniqueParam}&retry=${attempts}`;
       script.id = id;
 
       script.onload = () => {
         const duration = (performance.now() - startTime).toFixed(2);
         successCallback();
         updateStatus(
-                statusId,
-                `✅ Loaded in ${attempts + 1} attempt(s) — ${duration} ms`,
-                'success'
+          statusId,
+          `✅ Loaded in ${attempts + 1} attempt(s) — ${duration} ms`,
+          'success'
         );
       };
 
@@ -158,9 +161,9 @@
           const errorMsg = e?.message || 'Unknown error';
           errorCallback();
           updateStatus(
-                  statusId,
-                  `❌ Failed after ${attempts} attempts. (${duration} ms) Error: ${errorMsg}`,
-                  'error'
+            statusId,
+            `❌ Failed after ${attempts} attempts. (${duration} ms) Error: ${errorMsg}`,
+            'error'
           );
         }
       };
@@ -171,7 +174,7 @@
     tryLoad();
   }
 
-  // Загрузка CDN-скриптов с повторными попытками
+  // Загрузка CDN-скриптов с отключением кэша
   loadScriptWithRetry({
     src: 'https://tganalytics.xyz/index.js',
     id: 'first-cdn',

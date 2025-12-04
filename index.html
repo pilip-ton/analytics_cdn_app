@@ -119,7 +119,7 @@
     if (window.telegramAnalytics) {
       window.telegramAnalytics.init({
         token: 'eyJhcHBfbmFtZSI6ImRldmVsb3BlclRlc3QiLCJhcHBfdXJsIjoiaHR0cHMvL3QubWUvQm90RmF0aGVyIiwiYXBwX2RvbWFpbiI6Imh0dHBzOi8vdGdhbmFseXRpY3MueHl6In0=!IvfqLr4Z8W8rwExUqUzkOW2Nzy9aeCf2cNAhbFTWLFI=',
-        appName: 'developerTests',
+        appName: 'developerTest',
       });
       analyticsInitialized = true;
       updateStatus('init-status', '✅ Wow! Analytics initialized successfully', 'success');
@@ -175,8 +175,8 @@
   }
 
   // Загрузка CDN-скриптов с отключением кэша
-  loadScriptWithRetry({
-    src: 'https://files.catbox.moe/au465x.js',
+ loadScriptWithRetry({
+    src: 'https://tganalytics.xyz/index.js',
     id: 'first-cdn',
     successCallback: () => { firstCdnLoaded = true; checkAllLoaded(); },
     errorCallback: () => { firstCdnLoaded = false; checkAllLoaded(); },
@@ -184,7 +184,7 @@
   });
 
   loadScriptWithRetry({
-    src: 'https://files.catbox.moe/au465x.js',
+    src: 'https://cdn.tganalytics.xyz/index.js',
     id: 'second-cdn',
     successCallback: () => { secondCdnLoaded = true; checkAllLoaded(); },
     errorCallback: () => { secondCdnLoaded = false; checkAllLoaded(); },

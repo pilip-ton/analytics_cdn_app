@@ -67,7 +67,7 @@
       const url = args[0];
       if (typeof url === 'string' && url.includes('/events')) {
         const response = await originalFetch.apply(this, args);
-        if ([200, 201, 203].includes(response.status)) {
+        if ([200, 201, 202, 203].includes(response.status)) {
           updateStatus('event-status', '✅ Analytics event sent', 'success');
         } else {
           updateStatus('event-status', `❌ Analytics event failed (status ${response.status})`, 'error');
@@ -88,7 +88,7 @@
     XMLHttpRequest.prototype.send = function () {
       if (this._isAnalyticsEvent) {
         this.addEventListener('load', function () {
-          if ([200, 201, 203].includes(this.status)) {
+          if ([200, 201, 202, 203].includes(this.status)) {
             updateStatus('event-status', '✅ Analytics event sent', 'success');
           } else {
             updateStatus('event-status', `❌ Analytics event failed (status ${this.status})`, 'error');
